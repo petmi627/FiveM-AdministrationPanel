@@ -1,0 +1,45 @@
+version: '3.3'
+
+services:
+  db:
+    container_name: 'FiveM_AdministrationPanel_db'
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'db'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    volumes:
+      - my-db:/var/lib/mysql
+
+  web:
+    container_name: 'FiveM_AdministrationPanel'
+    build: web/
+    depends_on:
+      - db
+    environment:
+      MYSQL_HOST: 'db'
+      MYSQL_DATABASE: 'db'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      APP_URL: 'http://yoururl.com/'
+      APP_SUBFOLDER: ''
+      APP_STEAM_API_KEY: ''
+      TZ: 'Europe/Luxembourg'
+    volumes:
+      - web:/var/www/html
+
+  cronjob:
+    container_name: 'FiveM_AdministrationPanel_cronjob'
+    build: cronjob/
+    environment:
+      URL: 'http://yoururl.com/api/cron'
+    volumes:
+      -cronjob:/var/log/
+
+
+volumes:
+  db:
+  web:
+  cronjob:
